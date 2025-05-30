@@ -29,7 +29,14 @@ export class DND5e extends BaseSystem {
   }
 
   systemValidation(macro) {
-    // let regex = /\.use\(\{[^}]*}, \{[^}]*skipItemMacro: true[^}]*}\)/g;
+    const olderThan4 = foundry.utils.isNewerVersion("4.0.0", game.system.version);
+
+    if (olderThan4) {
+      ui.notifications.warn("itemacro.dnd5e.systemDeprecationv4", {localize: true, permanent: true});
+
+      return false;
+    }
+
     let regex = /\.use\(\{[^}]*}, \{[^}]*skipItemMacro: true[^}]*}\)/g;
     if (regex.test(macro.command)) {
       ui.notifications.error("itemacro.dnd5e.skipItemMacroDeprecation", {localize: true, permanent: true});

@@ -13,22 +13,13 @@ export class ItemMacroConfig extends MacroConfig {
     });
   }
 
-  static createMacroButton() {
-    const button = document.createElement('a');
-    button.className = 'open-itemacro';
-    button.title = 'itemacro';
-    button.innerHTML = `<i class="fas fa-sd-card"></i>${settings.value("icon") ? "" : "Item Macro"}`;
-    return button;
-  }
-
   static _init(app, html, data) {
     logger.debug("ItemMacroConfig.mjs | _init  | ", {app, html, data});
 
     if ((settings.value("visibilty") && app.object.isOwner) || game.user.isGM) {
-      // let openButton = $(`<a class="open-itemacro" title="itemacro"><i class="fas fa-sd-card"></i>${settings.value("icon") ? "" : "Item Macro"}</a>`);
-      const openButton = this.createMacroButton();
+      let openButton = $(`<a class="open-itemacro" title="itemacro"><i class="fas fa-sd-card"></i>${settings.value("icon") ? "" : "Item Macro"}</a>`);
 
-      openButton.addEventListener('click',async (event) => {
+      openButton.click(async (event) => {
         let Macro = null;
         let Item = await fromUuid(app.document.uuid);
 
@@ -46,14 +37,9 @@ export class ItemMacroConfig extends MacroConfig {
         logger.debug("ItemMacroConfig.mjs | _init click  | ", {event, Macro, Item});
       });
 
-      // html.closest('.app').find('.open-itemacro').remove();
-      const appElement = html.closest('.app');
-      appElement.querySelector('.open-itemacro')?.remove();
-
-      // let titleElement = html.closest('.app').find('.window-title');
-      // openButton.insertAfter(titleElement);
-      const titleElement = appElement.querySelector('.window-title');
-      titleElement.after(openButton);
+      html.closest('.app').find('.open-itemacro').remove();
+      let titleElement = html.closest('.app').find('.window-title');
+      openButton.insertAfter(titleElement);
     }
   }
 

@@ -80,43 +80,38 @@ export class helper {
 
       logger.debug("changeButtonExecution | ", {app, html, str, itemImages});
 
-      //for (let img of itemImages) {
-      for (let i = 0; i < itemImages.length; i++) {
-        const img = itemImages[i];
+      for (let img of itemImages) {
+        img = $(img);
 
         const itemTag = handler.itemTag;
-        const li = img.closest(itemTag);
-        const id = li?.dataset?.itemId || li?.dataset?.documentId;
-  
+        const li = img.parents(itemTag);
+        const id = li.attr(handler.idDataAttr) ?? img.attr(handler.idDataAttr);
+
         if (!id) {
           logger.debug("Id Error | ", img, li, id);
-          return;
+          continue;
         }
 
         const item = app.actor.items.get(id);
 
         logger.debug("changeButtonExecution | for | ", {img, li, id, item});
 
-        // if (!item.hasMacro()) {
-        //   continue;
-        // }
-
-        // if (settings.value("click")) {
-        //   img.contextmenu((event) => {
-        //     item.executeMacro({event});
-        //   })
-        // } else {
-        //   img.removeEventListener();
-        //   img.addEventListener((event) => {
-        //     logger.debug("Img Click | ", img, event);
-        //     item.executeMacro({event});
-        //   });
-        // }
-        // onChange.forEach(fn => fn(img, item, html));
-        if (item?.hasMacro?.()) {
-          helper.setupMacroButton(img, item);
-          onChange.forEach(fn => fn(img, item, html));
+        if (!item.hasMacro()) {
+          continue;
         }
+
+        if (settings.value("click")) {
+          img.contextmenu((event) => {
+            item.executeMacro({event});
+          })
+        } else {
+          img.off();
+          img.click((event) => {
+            logger.debug("Img Click | ", img, event);
+            item.executeMacro({event});
+          });
+        }
+        onChange.forEach(fn => fn(img, item, html));
       }
     }
   }
@@ -164,8 +159,8 @@ export class helper {
 
         //update scene entities
         for (let s of game.scenes) {
-          for (let t of s.tokens.contents.filter(e => !e.actorLink)) {
-            const token = t.object ?? new Token(t);
+          for (let t of s.data.tokens.filter(e => !e.actorLink)) {
+            let token = new Token(t, s);
             await updateActor({
               actor: token.actor,
               name: item.name,
@@ -205,33 +200,6 @@ export class helper {
     }
   }
 
-  static setupMacroButton(img, item) {
-    img = img instanceof $ ? img[0] : img;
-    
-    img.addEventListener('click', (event) => {
-      logger.debug("Img Click | ", img, event);
-      item.executeMacro({event});
-    });
-    
-    if (settings.value("click")) {
-      img.addEventListener('contextmenu', (event) => {
-        item.executeMacro({event});
-      });
-    }
-  }
-
-  static handleSheetRender(app, html, data) {
-    if (app.document?.documentName === "Item") {
-      ItemMacroConfig._init(app, html, data);
-    }
-  }
-
-  static handleContextMenu(documentType, contextOptions, html) {
-    if (documentType === "Item") {
-      this.addContext(contextOptions, "Directory");
-    }
-  }
-  
   static async waitFor(fn, m = 200, w = 100, i = 0) {
     while (!fn(i, ((i * w) / 100)) && i < m) {
       i++;

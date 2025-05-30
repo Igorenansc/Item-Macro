@@ -6,7 +6,7 @@ export class logger {
   }
 
   static debug(...args) {
-    if (settings.value('debug') && game.modules.get('_dev-mode')?.api?.getPackageDebugValue('itemacro'))
+    if (settings.value('debug'))
       this.info("DEBUG | ", ...args);
   }
 

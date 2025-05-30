@@ -15,7 +15,6 @@ import {DungeonCrawlClassics} from "./handlers/DungeonCrawlClassics.mjs";
 import {Dragonbane} from "./handlers/Dragonbane.mjs";
 import {WorldOfDarkness} from "./handlers/WorldOfDarkness.mjs";
 import {Symbaroum} from "./handlers/Symbaroum.mjs";
-import { v13Shims } from "../v13Compatibility.mjs";
 
 export class SystemManager {
   /**
@@ -71,10 +70,6 @@ export class SystemManager {
     }
   }
 
-  getCompatibilityShim() {
-    return v13Shims[game.system.id] || v13Shims.default;
-  }
-  
   /**
    * @returns {BaseSystem|null}
    */

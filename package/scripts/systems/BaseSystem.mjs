@@ -73,7 +73,6 @@ export class BaseSystem {
   }
 
   get idDataAttr() {
-    // return "data-item-id";
-    return "data-document-id";
+    return "data-item-id";
   }
 }
